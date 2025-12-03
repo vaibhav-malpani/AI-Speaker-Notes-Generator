@@ -6,6 +6,7 @@ Converts PDF pages or existing PPTX slides to PowerPoint with AI-generated prese
 import os
 import sys
 import io
+import uuid
 from pathlib import Path
 from pptx import Presentation
 from pptx.util import Inches
@@ -80,7 +81,7 @@ Write ONLY the spoken words - nothing else. No labels, no sections, no formattin
 Just write what needs to be said, as if you're speaking directly to the audience."""
 
     try:
-        model_name = os.environ.get('GEMINI_MODEL', 'gemini-3-pro-preview')
+        model_name = os.environ.get('GEMINI_MODEL', 'gemini-2.5-flash')
         response = client.models.generate_content(
             model=model_name,
             contents=[
@@ -100,42 +101,158 @@ Just write what needs to be said, as if you're speaking directly to the audience
         return "Speaker notes could not be generated for this slide."
 
 
-def slide_to_image(slide):
+def render_slide_as_image(prs, slide_idx, temp_dir="temp_slides"):
     """
-    Convert a PowerPoint slide to an image for AI analysis.
-    
-    Args:
-        slide: pptx slide object
-    
-    Returns:
-        PIL Image
-    """
-    # Export slide as image (this is a workaround - we'll create a composite)
-    # For now, return None and handle in the calling function
-    return None
-
-
-def export_slide_as_image(prs, slide_index, output_path="temp_slide.png"):
-    """
-    Export a slide as an image by saving PPTX and converting.
-    This is a helper that requires the presentation to be saved first.
+    Create a visual representation of a PPTX slide with text overlay.
     
     Args:
         prs: Presentation object
-        slide_index: Index of slide to export
-        output_path: Temporary output path
+        slide_idx (int): Index of slide to render
+        temp_dir (str): Directory for temporary files
     
     Returns:
         PIL Image or None
     """
-    # Note: Direct slide-to-image in python-pptx is not supported
-    # We'll need to use the original approach of working with the existing content
-    return None
+    try:
+        from PIL import ImageDraw, ImageFont
+        
+        source_slide = prs.slides[slide_idx]
+        
+        # Get slide dimensions
+        slide_width_inches = prs.slide_width.inches
+        slide_height_inches = prs.slide_height.inches
+        
+        # Create a canvas with slide dimensions at 150 DPI
+        dpi = 150
+        img_width = int(slide_width_inches * dpi)
+        img_height = int(slide_height_inches * dpi)
+        
+        # Create white background
+        slide_image = Image.new('RGB', (img_width, img_height), color='white')
+        draw = ImageDraw.Draw(slide_image)
+        
+        # Try to load a font (fallback to default if not available)
+        try:
+            font = ImageFont.truetype("arial.ttf", 20)
+            font_small = ImageFont.truetype("arial.ttf", 16)
+        except:
+            font = ImageFont.load_default()
+            font_small = ImageFont.load_default()
+        
+        has_content = False
+        
+        # Process all shapes in the slide
+        for shape in source_slide.shapes:
+            try:
+                # Handle pictures
+                if shape.shape_type == 13:  # Picture type
+                    image = shape.image
+                    image_bytes = image.blob
+                    shape_image = Image.open(io.BytesIO(image_bytes))
+                    
+                    # Calculate position and size
+                    left = int((shape.left / prs.slide_width) * img_width)
+                    top = int((shape.top / prs.slide_height) * img_height)
+                    width = int((shape.width / prs.slide_width) * img_width)
+                    height = int((shape.height / prs.slide_height) * img_height)
+                    
+                    # Resize and paste
+                    shape_image = shape_image.resize((width, height), Image.LANCZOS)
+                    slide_image.paste(shape_image, (left, top))
+                    has_content = True
+                
+                # Handle text boxes and shapes with text
+                elif hasattr(shape, "text") and shape.text.strip():
+                    text = shape.text.strip()
+                    
+                    # Calculate position and size
+                    left = int((shape.left / prs.slide_width) * img_width)
+                    top = int((shape.top / prs.slide_height) * img_height)
+                    width = int((shape.width / prs.slide_width) * img_width)
+                    height = int((shape.height / prs.slide_height) * img_height)
+                    
+                    # Draw a light background for text
+                    draw.rectangle([left, top, left + width, top + height], 
+                                 fill='#f0f0f0', outline='#cccccc')
+                    
+                    # Draw text (simplified - just the first 500 chars)
+                    text_display = text[:500]
+                    # Wrap text to fit width
+                    words = text_display.split()
+                    lines = []
+                    current_line = ""
+                    
+                    for word in words:
+                        test_line = current_line + " " + word if current_line else word
+                        # Rough estimate - 10 pixels per char
+                        if len(test_line) * 10 < width:
+                            current_line = test_line
+                        else:
+                            if current_line:
+                                lines.append(current_line)
+                            current_line = word
+                    
+                    if current_line:
+                        lines.append(current_line)
+                    
+                    # Draw the lines
+                    y_offset = top + 10
+                    for line in lines[:10]:  # Limit to 10 lines
+                        draw.text((left + 10, y_offset), line, fill='black', font=font_small)
+                        y_offset += 25
+                    
+                    has_content = True
+                
+                # Handle tables
+                elif hasattr(shape, "has_table") and shape.has_table:
+                    table = shape.table
+                    left = int((shape.left / prs.slide_width) * img_width)
+                    top = int((shape.top / prs.slide_height) * img_height)
+                    width = int((shape.width / prs.slide_width) * img_width)
+                    height = int((shape.height / prs.slide_height) * img_height)
+                    
+                    # Draw table border
+                    draw.rectangle([left, top, left + width, top + height], 
+                                 outline='#666666', width=2)
+                    
+                    # Draw simplified table representation
+                    row_height = height // len(table.rows) if len(table.rows) > 0 else 30
+                    y_pos = top
+                    
+                    for row in table.rows[:5]:  # Limit to first 5 rows
+                        x_pos = left
+                        col_width = width // len(row.cells) if len(row.cells) > 0 else 100
+                        
+                        for cell in row.cells[:5]:  # Limit to first 5 columns
+                            cell_text = cell.text.strip()[:30]  # Limit text length
+                            if cell_text:
+                                draw.text((x_pos + 5, y_pos + 5), cell_text, 
+                                        fill='black', font=font_small)
+                            x_pos += col_width
+                        
+                        y_pos += row_height
+                    
+                    has_content = True
+                    
+            except Exception as e:
+                # Skip shapes that cause errors
+                continue
+        
+        # Return the image if we found any content
+        if has_content:
+            return slide_image
+        else:
+            return None
+            
+    except Exception as e:
+        print(f"    Warning: Could not render slide as image: {str(e)[:100]}")
+        return None
 
 
 def add_notes_to_pptx(input_pptx, output_pptx, api_key):
     """
     Add AI-generated speaker notes to an existing PPTX file.
+    Extracts text and images directly from slides for analysis.
     
     Args:
         input_pptx (str): Path to input PPTX file
@@ -154,37 +271,71 @@ def add_notes_to_pptx(input_pptx, output_pptx, api_key):
     num_slides = len(prs.slides)
     print(f"Total slides: {num_slides}\n")
     
-    # We need to convert PPTX to PDF first, then process
-    # For simplicity, we'll extract text and use that
-    print("Note: For PPTX input, generating notes based on slide content analysis...")
-    print("For best results with images, convert PPTX to PDF first.\n")
-    
+    # Process each slide
     for idx, slide in enumerate(prs.slides):
         print(f"{'='*60}")
         print(f"Processing slide {idx + 1}/{num_slides}...")
         print(f"{'='*60}")
         
-        # Extract text content from slide
+        notes = None
+        
+        # Extract text content from slide first
         slide_text = []
-        for shape in slide.shapes:
-            if hasattr(shape, "text"):
-                if shape.text.strip():
-                    slide_text.append(shape.text.strip())
+        try:
+            for shape in slide.shapes:
+                if hasattr(shape, "text"):
+                    text = shape.text.strip()
+                    if text:
+                        slide_text.append(text)
+                # Also check for text in tables
+                if hasattr(shape, "has_table") and shape.has_table:
+                    for row in shape.table.rows:
+                        for cell in row.cells:
+                            text = cell.text.strip()
+                            if text:
+                                slide_text.append(text)
+        except Exception as e:
+            print(f"  Warning: Error extracting text: {str(e)[:100]}")
         
         combined_text = "\n".join(slide_text)
-        print(f"  Slide content: {combined_text[:100]}...")
         
-        # Generate notes based on text content
-        print("  Generating speaker notes with AI...")
-        notes = generate_notes_from_text(combined_text, api_key)
+        # Try to create a visual representation
+        print("  [1/2] Creating slide visual representation...")
+        slide_image = render_slide_as_image(prs, idx)
+        
+        # Strategy: Use image if available for better context, otherwise use text
+        if slide_image:
+            try:
+                print(f"  [2/2] Generating speaker notes with AI (visual analysis with {len(combined_text)} chars of text)...")
+                notes = generate_speaker_notes(slide_image, api_key)
+            except Exception as e:
+                print(f"  Warning: Image-based analysis failed: {str(e)[:100]}")
+                notes = None
+        
+        # Fallback to text-only approach if image analysis failed or no image
+        if notes is None and combined_text:
+            print(f"  [2/2] Generating speaker notes with AI (text-based, {len(combined_text)} chars)...")
+            try:
+                notes = generate_notes_from_text(combined_text, api_key)
+            except Exception as e:
+                print(f"  Error generating notes: {str(e)[:100]}")
+                notes = "This slide contains content but speaker notes could not be generated. Please review and add custom notes."
+        
+        # If we still don't have notes, provide a default message
+        if notes is None:
+            print("  Warning: No content found in slide")
+            notes = "This slide appears to be empty or contains only visual elements without text. Please review and add custom speaker notes as needed."
         
         # Add notes to slide
-        notes_slide = slide.notes_slide
-        text_frame = notes_slide.notes_text_frame
-        text_frame.text = notes
-        
-        print(f"  ✓ Slide {idx + 1} completed with notes")
-        print(f"  Notes preview: {notes[:100]}...\n")
+        try:
+            notes_slide = slide.notes_slide
+            text_frame = notes_slide.notes_text_frame
+            text_frame.text = notes
+            
+            print(f"  ✓ Slide {idx + 1} completed with notes")
+            print(f"  Notes preview: {notes[:100]}...\n")
+        except Exception as e:
+            print(f"  Error adding notes to slide: {str(e)[:100]}\n")
     
     # Save presentation
     print(f"{'='*60}")
@@ -208,6 +359,9 @@ def generate_notes_from_text(slide_text, api_key):
     Returns:
         str: Generated speaker notes
     """
+    if not slide_text or not slide_text.strip():
+        return "This slide appears to contain visual content without text. Please review the slide and add appropriate speaker notes."
+    
     client = genai.Client(api_key=api_key)
     
     prompt = f"""Based on this slide content, write exactly what the presenter should say when presenting this slide.
@@ -223,12 +377,13 @@ Write a natural, conversational script that:
 - Uses simple, clear language
 - Includes no markdown formatting, bullets, or special characters
 - Is just plain text that can be read directly
+- Expands on the bullet points or headings with context and explanation
 
 Write ONLY the spoken words - nothing else. No labels, no sections, no formatting.
 Just write what needs to be said, as if you're speaking directly to the audience."""
 
     try:
-        model_name = os.environ.get('GEMINI_MODEL', 'gemini-3-pro-preview')
+        model_name = os.environ.get('GEMINI_MODEL', 'gemini-2.5-flash')
         response = client.models.generate_content(
             model=model_name,
             contents=[

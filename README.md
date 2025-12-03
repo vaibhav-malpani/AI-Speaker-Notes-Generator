@@ -4,7 +4,7 @@ Automatically add AI-generated speaker notes to your PDF or PowerPoint presentat
 
 ## ✨ Features
 
-- 🤖 **AI-Powered**: Uses Google Gemini 3.0 to generate natural speaker notes
+- 🤖 **AI-Powered**: Uses Google Gemini 2.5 Flash to generate natural speaker notes
 - 📄 **PDF Support**: Converts PDF presentations to PPTX with speaker notes
 - 📊 **PPTX Support**: Adds notes to existing PowerPoint presentations
 - 🌐 **Web Interface**: Beautiful, modern UI for easy file upload and download

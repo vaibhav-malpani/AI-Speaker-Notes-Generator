@@ -1,17 +1,20 @@
 # 🎤 AI Speaker Notes Generator
 
-Automatically add AI-generated speaker notes to your PDF or PowerPoint presentations using Google Gemini AI. Perfect for presenters who need natural, conversational speaking scripts.
+Automatically add AI-generated speaker notes to your PDF or PowerPoint presentations using Google Gemini AI. Perfect for presenters who need natural, conversational speaking scripts with customizable length and tone options.
 
 ## ✨ Features
 
-- 🤖 **AI-Powered**: Uses Google Gemini 2.5 Flash to generate natural speaker notes
+- 🤖 **AI-Powered**: Uses Google Gemini 2.0 Flash to generate natural speaker notes
 - 📄 **PDF Support**: Converts PDF presentations to PPTX with speaker notes
 - 📊 **PPTX Support**: Adds notes to existing PowerPoint presentations
-- 🌐 **Web Interface**: Beautiful, modern UI for easy file upload and download
+- 🌐 **Modern Web Interface**: Beautiful gradient UI with real-time processing visualization
+- 📡 **Live Progress Tracking**: Watch each slide being processed in real-time with visual preview
+- 🎨 **Customizable Output**: Choose from 3 note lengths and 9 different tones
 - 💬 **Natural Scripts**: Generates conversational text, not bullet points
-- ⚡ **Fast Processing**: Efficient processing with progress updates
+- ⚡ **Fast Processing**: Efficient processing with Server-Sent Events streaming
 - 🎯 **Drag & Drop**: Simple drag-and-drop file upload
 - 📥 **Auto Download**: Your file downloads automatically when ready
+- 🖼️ **Slide Preview**: See live preview of each slide as it's being processed
 
 ## 🚀 Quick Start
 
@@ -54,7 +57,16 @@ Automatically add AI-generated speaker notes to your PDF or PowerPoint presentat
    - Drag and drop a PDF or PPTX file
    - Or click to browse and select a file
 
-4. **Download:**
+4. **Customize your notes (optional):**
+   - Choose note length: **Brief** (20-30s), **Standard** (45-60s), or **Detailed** (90-120s)
+   - Select speaking tone: **Professional**, **Casual**, **Academic**, **Persuasive**, **Enthusiastic**, **Storytelling**, **Technical**, **Inspirational**, or **Educational**
+
+5. **Watch the magic happen:**
+   - See real-time progress as each slide is processed
+   - View live preview of slides being analyzed
+   - Progress indicator shows which slide is being processed
+
+6. **Download:**
    - Your presentation with speaker notes downloads automatically!
 
 #### Option 2: Command Line
@@ -82,15 +94,35 @@ Higher DPI = better quality (default: 200)
 
 ## 📝 What You Get
 
-### Speaker Notes Format
+### Customizable Speaker Notes
 
-The AI generates **plain text speaking scripts** that:
+The AI generates **plain text speaking scripts** tailored to your preferences:
+
+#### Note Lengths
+- **Brief (20-30 seconds)**: Concise, 2-4 sentences per slide - perfect for quick pitches
+- **Standard (45-60 seconds)**: Comprehensive, 4-6 sentences per slide - ideal for most presentations
+- **Detailed (90-120 seconds)**: Thorough, 8-12 sentences per slide - great for in-depth explanations
+
+#### Speaking Tones
+- **Professional**: Business-appropriate and polished
+- **Casual**: Friendly and conversational
+- **Academic**: Scholarly and research-oriented
+- **Persuasive**: Compelling and convincing
+- **Enthusiastic**: Energetic and passionate
+- **Storytelling**: Narrative-driven and engaging
+- **Technical**: Precise and technically detailed
+- **Inspirational**: Motivational and uplifting
+- **Educational**: Clear and instructive for learning
+
+### Speaker Notes Quality
+
+All generated notes:
 - Sound natural when spoken aloud
 - Are conversational and engaging
-- Take 30-60 seconds to present per slide
 - Are written in first person
 - Contain no bullets, markdown, or special formatting
 - Can be read directly during your presentation
+- Match your selected tone and length preferences
 
 ### Example
 
@@ -169,11 +201,14 @@ Edit `server.py` to change:
 
 ## 🎯 Use Cases
 
-- **Business Presentations**: Add professional speaker notes to sales decks
-- **Academic Lectures**: Generate talking points for educational slides
-- **Conference Talks**: Prepare speaking scripts for technical presentations
-- **Training Materials**: Create instructor notes for training presentations
-- **Pitch Decks**: Add compelling narratives to investor presentations
+- **Business Presentations**: Add professional speaker notes to sales decks with persuasive or professional tone
+- **Academic Lectures**: Generate scholarly talking points with academic tone for educational slides
+- **Conference Talks**: Prepare technical or enthusiastic scripts for tech presentations
+- **Training Materials**: Create instructor notes with educational tone for training presentations
+- **Pitch Decks**: Add compelling narratives with persuasive or storytelling tone to investor presentations
+- **Keynote Speeches**: Generate inspirational and motivational scripts for leadership talks
+- **Quick Pitches**: Use brief notes for rapid-fire presentations or elevator pitches
+- **Detailed Workshops**: Create comprehensive speaking scripts with detailed notes for in-depth sessions
 
 ## 🤝 Contributing
 
@@ -196,6 +231,10 @@ This project is open source and available under the MIT License.
 - **PPTX Input**: Works best with slides that have text content
 - **Speaker Notes**: View notes in PowerPoint's Presenter View (Slide Show → Presenter View)
 - **API Limits**: Google Gemini API has rate limits - if processing fails, wait a moment and retry
+- **Note Length Selection**: Choose brief for time-constrained presentations, detailed for educational content
+- **Tone Matching**: Select a tone that matches your audience (casual for internal meetings, professional for clients)
+- **Real-Time Preview**: Watch the slide preview to ensure proper processing
+- **Customization**: Experiment with different style and tone combinations to find what works best for you
 
 ## 🐛 Troubleshooting
 

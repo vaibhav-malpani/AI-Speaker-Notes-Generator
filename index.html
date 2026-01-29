@@ -12,7 +12,7 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
@@ -22,63 +22,71 @@
         }
         
         .container {
-            background: white;
+            background: #ffffff;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            padding: 50px 45px;
             max-width: 600px;
             width: 100%;
         }
         
         h1 {
-            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             text-align: center;
-            margin-bottom: 10px;
-            font-size: 2em;
+            margin-bottom: 8px;
+            font-size: 2.2em;
+            font-weight: 700;
         }
         
         .subtitle {
             text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 0.95em;
+            color: #8e8e93;
+            margin-bottom: 35px;
+            font-size: 1em;
+            font-weight: 500;
         }
         
         .upload-area {
-            border: 3px dashed #667eea;
-            border-radius: 15px;
-            padding: 40px 20px;
+            border: 3px dashed #8b7ec8;
+            border-radius: 16px;
+            padding: 60px 30px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            background: #f8f9ff;
+            background: #fafafa;
         }
         
         .upload-area:hover {
             border-color: #764ba2;
-            background: #f0f2ff;
+            background: #f5f3ff;
+            transform: translateY(-2px);
         }
         
         .upload-area.dragover {
-            border-color: #764ba2;
-            background: #e8ebff;
-            transform: scale(1.02);
+            border-color: #667eea;
+            background: #f0edff;
+            transform: scale(1.01);
         }
         
         .upload-icon {
-            font-size: 3em;
-            margin-bottom: 10px;
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            display: block;
         }
         
         .upload-text {
-            color: #667eea;
+            color: #8b7ec8;
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            font-size: 1.1em;
         }
         
         .upload-hint {
-            color: #999;
-            font-size: 0.9em;
+            color: #8e8e93;
+            font-size: 0.95em;
         }
         
         input[type="file"] {
@@ -87,30 +95,110 @@
         
         .file-info {
             margin-top: 20px;
-            padding: 15px;
-            background: #f0f2ff;
-            border-radius: 10px;
+            padding: 18px;
+            background: #f5f3ff;
+            border-radius: 12px;
             display: none;
+            border: 1px solid #e5e1ff;
         }
         
         .file-info.show {
             display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .file-name {
             color: #333;
             font-weight: 600;
-            margin-bottom: 10px;
             word-break: break-all;
+            font-size: 0.95em;
+        }
+        
+        .customization-panel {
+            margin-top: 25px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            display: none;
+        }
+        
+        .customization-panel.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .customization-title {
+            color: #333;
+            font-weight: 600;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+        
+        .customization-group {
+            margin-bottom: 18px;
+        }
+        
+        .customization-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .customization-label {
+            display: block;
+            color: #6b7280;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .customization-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .option-btn {
+            padding: 8px 16px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #6b7280;
+        }
+        
+        .option-btn:hover {
+            border-color: #8b7ec8;
+            color: #764ba2;
+        }
+        
+        .option-btn.active {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
         }
         
         .button {
             width: 100%;
-            padding: 15px;
-            margin-top: 20px;
+            padding: 16px;
+            margin-top: 25px;
             border: none;
-            border-radius: 10px;
-            font-size: 1em;
+            border-radius: 12px;
+            font-size: 1.05em;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -119,54 +207,31 @@
         .button-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
         }
         
         .button-primary:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.4);
+        }
+        
+        .button-primary:active:not(:disabled) {
+            transform: translateY(0);
         }
         
         .button:disabled {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
-        }
-        
-        .status {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: 600;
-            display: none;
-        }
-        
-        .status.show {
-            display: block;
-        }
-        
-        .status.processing {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .status.success {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
         }
         
         .spinner {
             border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border-top: 3px solid #764ba2;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
+            margin: 20px auto;
             display: none;
         }
         
@@ -179,10 +244,191 @@
             100% { transform: rotate(360deg); }
         }
         
+        .status {
+            margin-top: 20px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+            font-size: 0.95em;
+        }
+        
+        .status.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .status.processing {
+            background: #fff7ed;
+            color: #c2410c;
+            border: 1px solid #fed7aa;
+        }
+        
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+        
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 16px;
+            display: none;
+        }
+        
+        .progress-bar-container.show {
+            display: block;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            width: 0%;
+            border-radius: 10px;
+        }
+        
+        .slide-progress {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #6b7280;
+            display: none;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .slide-progress.show {
+            display: block;
+        }
+        
+        .slide-preview {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .slide-preview.show {
+            display: flex;
+        }
+        
+        .slide-preview-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .slide-preview-label {
+            font-size: 1em;
+            color: #764ba2;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+        
+        .slide-preview-image {
+            width: 100%;
+            max-width: 900px;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            display: block;
+            margin: 0 auto;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .slide-preview-info {
+            margin-top: 20px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+        
+        .processing-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+            gap: 10px;
+        }
+        
+        .processing-dots {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .processing-dot {
+            width: 8px;
+            height: 8px;
+            background: #764ba2;
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        .processing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .processing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+        
         .download-btn {
-            background: #28a745;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
             display: none;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
         
         .download-btn.show {
@@ -190,9 +436,23 @@
         }
         
         .download-btn:hover {
-            background: #218838;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.4);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 30px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .upload-area {
+                padding: 50px 20px;
+            }
         }
     </style>
 </head>
@@ -212,6 +472,34 @@
             <div class="file-name" id="fileName"></div>
         </div>
         
+        <div class="customization-panel" id="customizationPanel">
+            <div class="customization-title">⚙️ Customize Speaker Notes</div>
+            
+            <div class="customization-group">
+                <label class="customization-label">Note Length</label>
+                <div class="customization-options">
+                    <button class="option-btn" data-style="brief">Brief (30s)</button>
+                    <button class="option-btn active" data-style="standard">Standard (60s)</button>
+                    <button class="option-btn" data-style="detailed">Detailed (2min)</button>
+                </div>
+            </div>
+            
+            <div class="customization-group">
+                <label class="customization-label">Speaking Tone</label>
+                <div class="customization-options">
+                    <button class="option-btn active" data-tone="professional">Professional</button>
+                    <button class="option-btn" data-tone="casual">Casual</button>
+                    <button class="option-btn" data-tone="academic">Academic</button>
+                    <button class="option-btn" data-tone="persuasive">Persuasive</button>
+                    <button class="option-btn" data-tone="enthusiastic">Enthusiastic</button>
+                    <button class="option-btn" data-tone="storytelling">Storytelling</button>
+                    <button class="option-btn" data-tone="technical">Technical</button>
+                    <button class="option-btn" data-tone="inspirational">Inspirational</button>
+                    <button class="option-btn" data-tone="educational">Educational</button>
+                </div>
+            </div>
+        </div>
+        
         <button class="button button-primary" id="generateBtn" disabled>
             Generate Speaker Notes
         </button>
@@ -219,6 +507,27 @@
         <div class="spinner" id="spinner"></div>
         
         <div class="status" id="status"></div>
+        
+        <div class="progress-bar-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="slide-progress" id="slideProgress"></div>
+        
+        <div class="slide-preview" id="slidePreview">
+            <div class="slide-preview-content">
+                <div class="slide-preview-label">Currently Processing</div>
+                <img class="slide-preview-image" id="slideImage" src="" alt="Current slide">
+                <div class="slide-preview-info" id="slideInfo">Generating speaker notes...</div>
+                <div class="processing-indicator">
+                    <div class="processing-dots">
+                        <div class="processing-dot"></div>
+                        <div class="processing-dot"></div>
+                        <div class="processing-dot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <a href="#" class="button download-btn" id="downloadBtn" download style="display: none;">
             ⬇️ Download Presentation with Notes
@@ -234,8 +543,38 @@
         const spinner = document.getElementById('spinner');
         const status = document.getElementById('status');
         const downloadBtn = document.getElementById('downloadBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const slideProgress = document.getElementById('slideProgress');
+        const slidePreview = document.getElementById('slidePreview');
+        const slideImage = document.getElementById('slideImage');
+        const slideInfo = document.getElementById('slideInfo');
         
         let selectedFile = null;
+        let noteStyle = 'standard';
+        let noteTone = 'professional';
+        
+        // Handle customization options
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const button = e.target;
+                const group = button.parentElement;
+                
+                // Remove active from siblings
+                group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+                
+                // Add active to clicked
+                button.classList.add('active');
+                
+                // Update settings
+                if (button.dataset.style) {
+                    noteStyle = button.dataset.style;
+                }
+                if (button.dataset.tone) {
+                    noteTone = button.dataset.tone;
+                }
+            });
+        });
         
         // Click to upload
         uploadArea.addEventListener('click', () => {
@@ -278,9 +617,13 @@
             selectedFile = file;
             fileName.textContent = '📄 ' + file.name;
             fileInfo.classList.add('show');
+            document.getElementById('customizationPanel').classList.add('show');
             generateBtn.disabled = false;
             status.classList.remove('show');
             downloadBtn.classList.remove('show');
+            progressContainer.classList.remove('show');
+            slideProgress.classList.remove('show');
+            slidePreview.classList.remove('show');
         }
         
         // Generate notes
@@ -292,41 +635,117 @@
             
             generateBtn.disabled = true;
             spinner.classList.add('show');
-            showStatus('🤖 Processing with AI... This may take a minute.', 'processing');
+            showStatus('🤖 Uploading file...', 'processing');
             downloadBtn.classList.remove('show');
+            progressContainer.classList.remove('show');
+            slideProgress.classList.remove('show');
+            slidePreview.classList.remove('show');
             
             try {
-                const response = await fetch('/upload', {
+                // Step 1: Upload file
+                const uploadResponse = await fetch('/upload', {
                     method: 'POST',
                     body: formData
                 });
                 
-                const result = await response.json();
-                
-                if (response.ok) {
-                    showStatus('✅ Success! Your presentation is ready.', 'success');
-                    
-                    // Automatically download the file
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = `/download/${result.filename}`;
-                    downloadLink.download = result.original_name;
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
-                    
-                    // Reset for next upload
-                    setTimeout(() => {
-                        generateBtn.disabled = false;
-                    }, 2000);
-                } else {
-                    showStatus('❌ Error: ' + result.detail, 'error');
-                    generateBtn.disabled = false;
+                if (!uploadResponse.ok) {
+                    const error = await uploadResponse.json();
+                    throw new Error(error.detail || 'Upload failed');
                 }
+                
+                const uploadResult = await uploadResponse.json();
+                const processingId = uploadResult.processing_id;
+                const outputFilename = uploadResult.output_filename;
+                const originalName = uploadResult.original_name;
+                
+                // Step 2: Connect to SSE for progress updates
+                showStatus('🤖 Processing with AI...', 'processing');
+                progressContainer.classList.add('show');
+                slideProgress.classList.add('show');
+                slidePreview.classList.add('show');
+                
+                const eventSource = new EventSource(`/process/${processingId}?style=${noteStyle}&tone=${noteTone}`);
+                
+                eventSource.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    
+                    if (data.error) {
+                        eventSource.close();
+                        showStatus('❌ Error: ' + data.error, 'error');
+                        spinner.classList.remove('show');
+                        progressContainer.classList.remove('show');
+                        slideProgress.classList.remove('show');
+                        slidePreview.classList.remove('show');
+                        generateBtn.disabled = false;
+                        return;
+                    }
+                    
+                    if (data.status === 'started') {
+                        showStatus('🤖 Starting to process slides...', 'processing');
+                        slideProgress.textContent = `Total slides: ${data.total_slides}`;
+                        progressBar.style.width = '0%';
+                    } 
+                    else if (data.status === 'processing') {
+                        const percent = (data.current_slide / data.total_slides) * 100;
+                        progressBar.style.width = percent + '%';
+                        slideProgress.textContent = `Processing slide ${data.current_slide} of ${data.total_slides}`;
+                        showStatus(`🤖 ${data.message}`, 'processing');
+                        
+                        // Update slide image if available
+                        if (data.slide_image) {
+                            slideImage.src = 'data:image/png;base64,' + data.slide_image;
+                            slideInfo.textContent = `Slide ${data.current_slide} of ${data.total_slides} - Generating AI speaker notes...`;
+                            slidePreview.classList.add('show');
+                        }
+                    }
+                    else if (data.status === 'saving') {
+                        progressBar.style.width = '100%';
+                        showStatus('💾 Saving presentation...', 'processing');
+                        slideProgress.textContent = 'Finalizing...';
+                        slidePreview.classList.remove('show');
+                    }
+                    else if (data.status === 'complete') {
+                        eventSource.close();
+                        showStatus('✅ Success! Your presentation is ready.', 'success');
+                        spinner.classList.remove('show');
+                        progressBar.style.width = '100%';
+                        slideProgress.textContent = 'Completed!';
+                        slidePreview.classList.remove('show');
+                        
+                        // Automatically download
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = `/download/${data.filename}`;
+                        downloadLink.download = originalName;
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                        
+                        // Reset for next upload
+                        setTimeout(() => {
+                            generateBtn.disabled = false;
+                            progressContainer.classList.remove('show');
+                            slideProgress.classList.remove('show');
+                        }, 2000);
+                    }
+                };
+                
+                eventSource.onerror = (error) => {
+                    eventSource.close();
+                    showStatus('❌ Connection error. Please try again.', 'error');
+                    spinner.classList.remove('show');
+                    progressContainer.classList.remove('show');
+                    slideProgress.classList.remove('show');
+                    slidePreview.classList.remove('show');
+                    generateBtn.disabled = false;
+                };
+                
             } catch (error) {
                 showStatus('❌ Error: ' + error.message, 'error');
-                generateBtn.disabled = false;
-            } finally {
                 spinner.classList.remove('show');
+                progressContainer.classList.remove('show');
+                slideProgress.classList.remove('show');
+                slidePreview.classList.remove('show');
+                generateBtn.disabled = false;
             }
         });
         

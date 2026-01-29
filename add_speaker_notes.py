@@ -7,6 +7,7 @@ import os
 import sys
 import io
 import uuid
+import base64
 from pathlib import Path
 from pptx import Presentation
 from pptx.util import Inches
@@ -47,13 +48,15 @@ def render_pdf_page_as_image(pdf_path, page_num, dpi=300):
     return img
 
 
-def generate_speaker_notes(image, api_key):
+def generate_speaker_notes(image, api_key, note_style="standard", note_tone="professional"):
     """
     Use Google Gemini to generate speaker notes for a slide.
     
     Args:
         image: PIL Image of the slide
         api_key: Google AI API key
+        note_style: Style of notes - 'brief', 'standard', or 'detailed'
+        note_tone: Tone of notes - 'professional', 'casual', 'academic', or 'persuasive'
     
     Returns:
         str: Generated speaker notes
@@ -66,12 +69,55 @@ def generate_speaker_notes(image, api_key):
     # Initialize Gemini client
     client = genai.Client(api_key=api_key)
     
-    prompt = """Analyze this presentation slide and write exactly what the presenter should say when presenting this slide.
+    # Configure style based on selection
+    style_configs = {
+        'brief': {
+            'duration': '20-30 seconds',
+            'detail': 'concise and to the point',
+            'sentences': '2-4 sentences'
+        },
+        'standard': {
+            'duration': '45-60 seconds',
+            'detail': 'clear and comprehensive',
+            'sentences': '4-6 sentences'
+        },
+        'detailed': {
+            'duration': '90-120 seconds',
+            'detail': 'thorough and detailed with context and examples',
+            'sentences': '8-12 sentences'
+        }
+    }
+    
+    # Configure tone based on selection
+    tone_configs = {
+        'professional': 'professional and business-appropriate',
+        'casual': 'friendly and conversational',
+        'academic': 'scholarly and research-oriented',
+        'persuasive': 'compelling and convincing',
+        'enthusiastic': 'energetic and passionate',
+        'storytelling': 'narrative-driven and engaging with stories',
+        'technical': 'precise and technically detailed',
+        'inspirational': 'motivational and uplifting',
+        'educational': 'clear and instructive for learning',
+        'enthusiastic': 'energetic and passionate',
+        'storytelling': 'narrative-driven and engaging with stories',
+        'technical': 'precise and technically detailed',
+        'inspirational': 'motivational and uplifting',
+        'educational': 'clear and instructive for learning'
+    }
+    
+    style_config = style_configs.get(note_style, style_configs['standard'])
+    tone_description = tone_configs.get(note_tone, tone_configs['professional'])
+    
+    prompt = f"""Analyze this presentation slide and write exactly what the presenter should say when presenting this slide.
 
 Write a natural, conversational script that:
+- Takes approximately {style_config['duration']} to speak
+- Is {style_config['detail']}
+- Contains {style_config['sentences']}
+- Uses a {tone_description} tone
 - Flows smoothly and sounds natural when spoken aloud
-- Explains what's on the slide clearly and concisely
-- Takes approximately 30-60 seconds to speak
+- Explains what's on the slide clearly
 - Is written in first person (as if you are the presenter)
 - Uses simple, clear language
 - Includes no markdown formatting, bullets, or special characters
@@ -81,7 +127,7 @@ Write ONLY the spoken words - nothing else. No labels, no sections, no formattin
 Just write what needs to be said, as if you're speaking directly to the audience."""
 
     try:
-        model_name = os.environ.get('GEMINI_MODEL', 'gemini-2.5-flash')
+        model_name = os.environ.get('GEMINI_MODEL', 'gemini-2.0-flash-exp')
         response = client.models.generate_content(
             model=model_name,
             contents=[
@@ -348,13 +394,15 @@ def add_notes_to_pptx(input_pptx, output_pptx, api_key):
     return output_pptx
 
 
-def generate_notes_from_text(slide_text, api_key):
+def generate_notes_from_text(slide_text, api_key, note_style="standard", note_tone="professional"):
     """
     Generate speaker notes from slide text content.
     
     Args:
         slide_text (str): Text content from slide
         api_key (str): Google AI API key
+        note_style: Style of notes - 'brief', 'standard', or 'detailed'
+        note_tone: Tone of notes - 'professional', 'casual', 'academic', or 'persuasive'
     
     Returns:
         str: Generated speaker notes
@@ -364,15 +412,53 @@ def generate_notes_from_text(slide_text, api_key):
     
     client = genai.Client(api_key=api_key)
     
+    # Configure style based on selection
+    style_configs = {
+        'brief': {
+            'duration': '20-30 seconds',
+            'detail': 'concise and to the point',
+            'sentences': '2-4 sentences'
+        },
+        'standard': {
+            'duration': '45-60 seconds',
+            'detail': 'clear and comprehensive',
+            'sentences': '4-6 sentences'
+        },
+        'detailed': {
+            'duration': '90-120 seconds',
+            'detail': 'thorough and detailed with context and examples',
+            'sentences': '8-12 sentences'
+        }
+    }
+    
+    # Configure tone based on selection
+    tone_configs = {
+        'professional': 'professional and business-appropriate',
+        'casual': 'friendly and conversational',
+        'academic': 'scholarly and research-oriented',
+        'persuasive': 'compelling and convincing',
+        'enthusiastic': 'energetic and passionate',
+        'storytelling': 'narrative-driven and engaging with stories',
+        'technical': 'precise and technically detailed',
+        'inspirational': 'motivational and uplifting',
+        'educational': 'clear and instructive for learning'
+    }
+    
+    style_config = style_configs.get(note_style, style_configs['standard'])
+    tone_description = tone_configs.get(note_tone, tone_configs['professional'])
+    
     prompt = f"""Based on this slide content, write exactly what the presenter should say when presenting this slide.
 
 Slide content:
 {slide_text}
 
 Write a natural, conversational script that:
+- Takes approximately {style_config['duration']} to speak
+- Is {style_config['detail']}
+- Contains {style_config['sentences']}
+- Uses a {tone_description} tone
 - Flows smoothly and sounds natural when spoken aloud
-- Explains the content clearly and concisely
-- Takes approximately 30-60 seconds to speak
+- Explains the content clearly
 - Is written in first person (as if you are the presenter)
 - Uses simple, clear language
 - Includes no markdown formatting, bullets, or special characters
@@ -383,7 +469,7 @@ Write ONLY the spoken words - nothing else. No labels, no sections, no formattin
 Just write what needs to be said, as if you're speaking directly to the audience."""
 
     try:
-        model_name = os.environ.get('GEMINI_MODEL', 'gemini-2.5-flash')
+        model_name = os.environ.get('GEMINI_MODEL', 'gemini-2.0-flash-exp')
         response = client.models.generate_content(
             model=model_name,
             contents=[
@@ -567,3 +653,232 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def process_pptx_with_progress(input_pptx, output_pptx, api_key, note_style="standard", note_tone="professional"):
+    """
+    Process PPTX with progress tracking for streaming updates.
+    Yields progress dictionaries during processing.
+    
+    Args:
+        input_pptx: Input PowerPoint file path
+        output_pptx: Output PowerPoint file path
+        api_key: Google AI API key
+        note_style: Style of notes - 'brief', 'standard', or 'detailed'
+        note_tone: Tone of notes - 'professional', 'casual', 'academic', or 'persuasive'
+    """
+    prs = Presentation(input_pptx)
+    num_slides = len(prs.slides)
+    
+    yield {
+        "status": "started",
+        "total_slides": num_slides,
+        "message": f"Starting to process {num_slides} slides..."
+    }
+    
+    for idx, slide in enumerate(prs.slides):
+        current_slide = idx + 1
+        
+        # Extract text content
+        slide_text = []
+        try:
+            for shape in slide.shapes:
+                if hasattr(shape, "text"):
+                    text = shape.text.strip()
+                    if text:
+                        slide_text.append(text)
+                if hasattr(shape, "has_table") and shape.has_table:
+                    for row in shape.table.rows:
+                        for cell in row.cells:
+                            text = cell.text.strip()
+                            if text:
+                                slide_text.append(text)
+        except Exception:
+            pass
+        
+        combined_text = "\n".join(slide_text)
+        
+        # Try visual representation
+        slide_image = render_slide_as_image(prs, idx)
+        
+        # Convert image to base64 for sending to UI
+        slide_image_base64 = None
+        if slide_image:
+            try:
+                # Resize image to reasonable size for web display (max 800px width)
+                display_image = slide_image.copy()
+                max_width = 800
+                if display_image.width > max_width:
+                    ratio = max_width / display_image.width
+                    new_height = int(display_image.height * ratio)
+                    display_image = display_image.resize((max_width, new_height), Image.LANCZOS)
+                
+                # Convert to base64
+                img_buffer = io.BytesIO()
+                display_image.save(img_buffer, format='PNG')
+                img_buffer.seek(0)
+                slide_image_base64 = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
+            except Exception:
+                pass
+        
+        yield {
+            "status": "processing",
+            "current_slide": current_slide,
+            "total_slides": num_slides,
+            "message": f"Processing slide {current_slide} of {num_slides}...",
+            "slide_image": slide_image_base64
+        }
+        
+        notes = None
+        
+        if slide_image:
+            try:
+                notes = generate_speaker_notes(slide_image, api_key, note_style, note_tone)
+            except Exception:
+                notes = None
+        
+        # Fallback to text-only
+        if notes is None and combined_text:
+            try:
+                notes = generate_notes_from_text(combined_text, api_key, note_style, note_tone)
+            except Exception:
+                notes = "This slide contains content but speaker notes could not be generated."
+        
+        if notes is None:
+            notes = "This slide appears to be empty or contains only visual elements without text."
+        
+        # Add notes to slide
+        try:
+            notes_slide = slide.notes_slide
+            text_frame = notes_slide.notes_text_frame
+            text_frame.text = notes
+        except Exception:
+            pass
+        
+        yield {
+            "status": "processing",
+            "current_slide": current_slide,
+            "total_slides": num_slides,
+            "message": f"Completed slide {current_slide} of {num_slides}",
+            "slide_image": slide_image_base64
+        }
+    
+    # Save presentation
+    prs.save(output_pptx)
+    
+    yield {
+        "status": "saving",
+        "message": "Saving presentation..."
+    }
+
+
+def process_pdf_with_progress(pdf_path, output_pptx, dpi, api_key, note_style="standard", note_tone="professional"):
+    """
+    Process PDF with progress tracking for streaming updates.
+    Yields progress dictionaries during processing.
+    
+    Args:
+        pdf_path: Input PDF file path
+        output_pptx: Output PowerPoint file path
+        dpi: DPI for rendering
+        api_key: Google AI API key
+        note_style: Style of notes - 'brief', 'standard', or 'detailed'
+        note_tone: Tone of notes - 'professional', 'casual', 'academic', or 'persuasive'
+    """
+    doc = fitz.open(pdf_path)
+    num_pages = len(doc)
+    doc.close()
+    
+    yield {
+        "status": "started",
+        "total_slides": num_pages,
+        "message": f"Starting to convert {num_pages} pages..."
+    }
+    
+    prs = Presentation()
+    prs.slide_width = Inches(10)
+    prs.slide_height = Inches(5.625)
+    
+    for page_idx in range(num_pages):
+        current_page = page_idx + 1
+        
+        # Render page
+        page_image = render_pdf_page_as_image(pdf_path, page_idx, dpi)
+        img_width, img_height = page_image.size
+        
+        # Convert image to base64 for sending to UI
+        slide_image_base64 = None
+        try:
+            # Resize image to reasonable size for web display (max 800px width)
+            display_image = page_image.copy()
+            max_width = 800
+            if display_image.width > max_width:
+                ratio = max_width / display_image.width
+                new_height = int(display_image.height * ratio)
+                display_image = display_image.resize((max_width, new_height), Image.LANCZOS)
+            
+            # Convert to base64
+            img_buffer = io.BytesIO()
+            display_image.save(img_buffer, format='PNG')
+            img_buffer.seek(0)
+            slide_image_base64 = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
+        except Exception:
+            pass
+        
+        yield {
+            "status": "processing",
+            "current_slide": current_page,
+            "total_slides": num_pages,
+            "message": f"Processing page {current_page} of {num_pages}...",
+            "slide_image": slide_image_base64
+        }
+        
+        # Add slide
+        blank_slide_layout = prs.slide_layouts[6]
+        slide = prs.slides.add_slide(blank_slide_layout)
+        
+        # Calculate scaling
+        slide_aspect = prs.slide_width / prs.slide_height
+        img_aspect = img_width / img_height
+        
+        if img_aspect > slide_aspect:
+            pic_width = prs.slide_width
+            pic_height = int(prs.slide_width * img_height / img_width)
+            left = 0
+            top = int((prs.slide_height - pic_height) / 2)
+        else:
+            pic_height = prs.slide_height
+            pic_width = int(prs.slide_height * img_width / img_height)
+            left = int((prs.slide_width - pic_width) / 2)
+            top = 0
+        
+        # Add image
+        img_bytes = io.BytesIO()
+        page_image.save(img_bytes, format='PNG')
+        img_bytes.seek(0)
+        
+        slide.shapes.add_picture(img_bytes, left, top, width=pic_width, height=pic_height)
+        
+        # Generate notes
+        notes = generate_speaker_notes(page_image, api_key, note_style, note_tone)
+        
+        # Add notes
+        notes_slide = slide.notes_slide
+        text_frame = notes_slide.notes_text_frame
+        text_frame.text = notes
+        
+        yield {
+            "status": "processing",
+            "current_slide": current_page,
+            "total_slides": num_pages,
+            "message": f"Completed page {current_page} of {num_pages}",
+            "slide_image": slide_image_base64
+        }
+    
+    # Save
+    prs.save(output_pptx)
+    
+    yield {
+        "status": "saving",
+        "message": "Saving presentation..."
+    }

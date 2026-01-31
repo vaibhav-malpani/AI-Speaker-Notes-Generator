@@ -127,7 +127,7 @@ Write ONLY the spoken words - nothing else. No labels, no sections, no formattin
 Just write what needs to be said, as if you're speaking directly to the audience."""
 
     try:
-        model_name = os.environ.get('GEMINI_MODEL', 'gemini-2.0-flash-exp')
+        model_name = os.environ.get('GEMINI_MODEL', 'gemini-3-flash-preview')
         response = client.models.generate_content(
             model=model_name,
             contents=[
@@ -469,7 +469,7 @@ Write ONLY the spoken words - nothing else. No labels, no sections, no formattin
 Just write what needs to be said, as if you're speaking directly to the audience."""
 
     try:
-        model_name = os.environ.get('GEMINI_MODEL', 'gemini-2.0-flash-exp')
+        model_name = os.environ.get('GEMINI_MODEL', 'gemini-3-flash-preview')
         response = client.models.generate_content(
             model=model_name,
             contents=[
